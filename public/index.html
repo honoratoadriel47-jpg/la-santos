@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LA SANTOS Barbearia · Agendamento online</title>
+  <meta name="description" content="Agende seu horário na LA SANTOS Barbearia: escolha o serviço, o dia e a hora em menos de um minuto.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta property="og:title" content="LA SANTOS Barbearia · Agende seu horário">
+  <meta property="og:description" content="Agendamento online da LA SANTOS Barbearia.">
+  <meta property="og:image" content="/assets/og.jpg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antic+Didone&family=Jost:wght@300;400;500&display=swap">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/site.css">
+  <script>
+    // Vinheta: aparece sempre que o site é aberto (exceto com "reduzir movimento", que recebe um fade curto).
+    (function () {
+      var d = document.documentElement;
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      d.className += reduce ? ' intro-reduced' : ' intro-on';
+    })();
+  </script>
+</head>
+<body>
+  <!-- VINHETA -------------------------------------------------------------- -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <div class="intro-stage">
+      <span class="part p-glasses">
+        <img class="lens-draw" src="/assets/logo-glasses.png" alt="" width="424" height="196">
+        <i class="shine"></i>
+        <svg class="glint g1" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0C21 13 27 19 40 20 27 21 21 27 20 40 19 27 13 21 0 20 13 19 19 13 20 0Z"/></svg>
+        <svg class="glint g2" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 0C21 13 27 19 40 20 27 21 21 27 20 40 19 27 13 21 0 20 13 19 19 13 20 0Z"/></svg>
+      </span>
+      <span class="part p-mustache">
+        <img class="m-half m-left" src="/assets/logo-mustache.png" alt="" width="564" height="158">
+        <img class="m-half m-right" src="/assets/logo-mustache.png" alt="" width="564" height="158">
+        <i class="shine"></i>
+      </span>
+      <span class="part p-name">
+        <img src="/assets/logo-name.png" alt="" width="720" height="168">
+        <i class="shine"></i>
+      </span>
+      <span class="part p-sub"><img src="/assets/logo-sub.png" alt="" width="472" height="62"></span>
+    </div>
+    <button class="intro-skip" type="button" id="introSkip" tabindex="-1">Pular</button>
+  </div>
+
+  <a class="skip-link" href="#agendar">Ir para o agendamento</a>
+
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="#" aria-label="LA SANTOS Barbearia — início">
+        <span class="brand-mark" aria-hidden="true">
+          <span class="bm-part bm-glasses"><img src="/assets/logo-glasses.png" alt="" width="424" height="196"><i class="shine"></i>
+            <svg class="bm-glint" viewBox="0 0 40 40"><path d="M20 0C21 13 27 19 40 20 27 21 21 27 20 40 19 27 13 21 0 20 13 19 19 13 20 0Z"/></svg></span>
+          <span class="bm-part bm-mustache"><img class="m-half m-left" src="/assets/logo-mustache.png" alt="" width="564" height="158"><img class="m-half m-right" src="/assets/logo-mustache.png" alt="" width="564" height="158"><i class="shine"></i></span>
+        </span>
+        <span class="brand-text"><span class="brand-name">LA SANTOS</span><span class="brand-sub">Barbearia</span></span>
+      </a>
+      <nav class="top-links" id="topLinks" aria-label="Contato"></nav>
+    </div>
+  </header>
+
+  <main id="agendar" class="page">
+    <div class="layout">
+      <section class="flow" aria-labelledby="flowTitle">
+        <div class="flow-head">
+          <p class="kicker" id="stepCounter">Agendamento online</p>
+          <h1 id="flowTitle" class="flow-title">Agende seu horário</h1>
+          <ol class="stepper" id="stepper" aria-label="Etapas do agendamento"></ol>
+        </div>
+        <div class="panel" id="panel" tabindex="-1" aria-live="polite">
+          <div class="list-skeleton" aria-hidden="true">
+            <div class="skeleton" style="height:44px;width:70%"></div>
+            <div class="skeleton" style="height:66px"></div><div class="skeleton" style="height:66px"></div>
+            <div class="skeleton" style="height:66px"></div><div class="skeleton" style="height:66px"></div>
+          </div>
+          <noscript><p class="notice">Ative o JavaScript para agendar online.</p></noscript>
+        </div>
+      </section>
+
+      <aside class="summary" id="summary" aria-label="Resumo do agendamento"></aside>
+    </div>
+
+    <section class="info" id="info" aria-label="Informações da barbearia"></section>
+  </main>
+
+  <footer class="foot" id="foot"></footer>
+
+  <div class="dock" id="dock" hidden></div>
+  <div class="toast-wrap" id="toasts" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/js/site.js"></script>
+  <script type="module" src="/js/brand-anim.js"></script>
+</body>
+</html>

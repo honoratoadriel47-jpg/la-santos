@@ -1,0 +1,12 @@
+{
+  "name": "la-santos-agendamento",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema de agendamento online da LA SANTOS Barbearia — Pulso Agency",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "node server.js",
+    "test": "node --test tests/*.test.js"
+  }
+}

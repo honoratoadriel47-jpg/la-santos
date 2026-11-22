@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Portfólio · LA SANTOS Barbearia</title>
+  <meta name="description" content="Trabalhos da LA SANTOS Barbearia.">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta property="og:title" content="Portfólio · LA SANTOS Barbearia">
+  <meta property="og:image" content="/assets/og.jpg">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antic+Didone&family=Jost:wght@300;400;500&display=swap">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/site.css">
+  <link rel="stylesheet" href="/css/portfolio.css">
+</head>
+<body class="pf-page">
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" id="homeLink" href="/" aria-label="LA SANTOS Barbearia — agendamento">
+        <span class="brand-mark" aria-hidden="true">
+          <span class="bm-part bm-glasses"><img src="/assets/logo-glasses.png" alt="" width="424" height="196"><i class="shine"></i>
+            <svg class="bm-glint" viewBox="0 0 40 40"><path d="M20 0C21 13 27 19 40 20 27 21 21 27 20 40 19 27 13 21 0 20 13 19 19 13 20 0Z"/></svg></span>
+          <span class="bm-part bm-mustache"><img class="m-half m-left" src="/assets/logo-mustache.png" alt="" width="564" height="158"><img class="m-half m-right" src="/assets/logo-mustache.png" alt="" width="564" height="158"><i class="shine"></i></span>
+        </span>
+        <span class="brand-text"><span class="brand-name">LA SANTOS</span><span class="brand-sub">Barbearia</span></span>
+      </a>
+      <nav class="top-links"><a class="pill-link is-solid" id="bookTop" href="/">Agendar horário</a></nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="pf-head">
+      <p class="kicker">Trabalhos da casa</p>
+      <h1 class="flow-title">Portfólio</h1>
+      <div class="chips" id="pfFilters" role="toolbar" aria-label="Filtrar por profissional" hidden></div>
+    </section>
+    <section id="gallery" class="gallery" aria-live="polite">
+      <div class="gallery-grid" aria-label="Carregando">
+        <div class="skeleton pf-skel"></div><div class="skeleton pf-skel tall"></div><div class="skeleton pf-skel"></div>
+        <div class="skeleton pf-skel tall"></div><div class="skeleton pf-skel"></div><div class="skeleton pf-skel"></div>
+      </div>
+    </section>
+    <section class="pf-cta">
+      <h2>Gostou de algum corte?</h2>
+      <p>Escolha o serviço e reserve seu horário em menos de um minuto.</p>
+      <a class="btn btn-primary" id="bookBottom" href="/">Agendar horário</a>
+    </section>
+  </main>
+
+  <footer class="foot" id="foot"></footer>
+
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Foto ampliada">
+    <button class="lb-btn lb-close" data-lb="close" aria-label="Fechar">×</button>
+    <button class="lb-btn lb-prev" data-lb="prev" aria-label="Foto anterior"></button>
+    <figure class="lb-figure"><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+    <button class="lb-btn lb-next" data-lb="next" aria-label="Próxima foto"></button>
+    <div class="lb-count" id="lbCount"></div>
+  </div>
+  <div class="toast-wrap" id="toasts" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/js/portfolio.js"></script>
+  <script type="module" src="/js/brand-anim.js"></script>
+</body>
+</html>
