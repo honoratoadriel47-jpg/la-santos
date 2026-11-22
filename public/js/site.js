@@ -63,6 +63,7 @@ function go(step, { replace = false } = {}) {
 }
 
 function route() {
+  if (!S.cfg) { render('servico'); return; } // ainda carregando: mantém o endereço como está
   let step = stepFromHash();
   if (!canEnter(step)) {
     // volta para a etapa mais avançada permitida
@@ -80,9 +81,8 @@ function render(step) {
   $('.layout').classList.toggle('is-done', step === 'confirmado');
   const list = steps();
   const idx = list.indexOf(step);
-  const waPending = step === 'confirmado' && S.booking && bookingWaLink(S.booking) && !S.waSent;
-  $('#stepCounter').textContent = step === 'confirmado' ? (waPending ? 'Horário reservado' : 'Tudo certo') : `Etapa ${idx + 1} de ${list.length} · ${META[step].label}`;
-  $('#flowTitle').textContent = waPending ? 'Falta enviar no WhatsApp' : META[step].title;
+  $('#stepCounter').textContent = step === 'confirmado' ? 'Tudo certo' : `Etapa ${idx + 1} de ${list.length} · ${META[step].label}`;
+  $('#flowTitle').textContent = META[step].title;
   document.title = step === 'servico' ? 'LA SANTOS Barbearia · Agendamento online' : `${META[step].label} · LA SANTOS`;
 
   $('#stepper').innerHTML = step === 'confirmado' ? '' : list.map((s, i) => {
@@ -197,20 +197,12 @@ const VIEWS = {
     const biz = S.cfg.business;
     const wa = bookingWaLink(b);
     const first = esc(b.name.split(' ')[0]);
-    const pending = !!wa && !S.waSent;
-    const head = pending
-      ? `<div class="wa-step" role="status">
-          <span class="wa-step-icon" aria-hidden="true">${ICONS.wa}</span>
-          <div><strong>Último passo, ${first}: envie a mensagem</strong>
-            <p>Seu horário já está reservado. Toque no botão abaixo e envie a mensagem no WhatsApp para a barbearia ser avisada.</p></div>
-        </div>
-        <a class="btn btn-primary btn-wa" href="${esc(wa)}" target="_blank" rel="noopener" data-act="waSent">${ICONS.wa} Enviar mensagem no WhatsApp</a>`
-      : `<div class="success-head">
+    const head = `<div class="success-head">
           <span class="success-mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-          <p style="margin:0;color:var(--ink-2)">${wa ? `Tudo certo, ${first}! Se o WhatsApp não abriu, use o botão abaixo e toque em enviar por lá.` : `Seu horário está reservado, ${first}. Guarde o código abaixo.`}</p>
+          <p style="margin:0;color:var(--ink-2)">${wa ? `Pronto, ${first}! Seu horário está reservado e a mensagem foi aberta no WhatsApp — é só tocar em enviar por lá.` : `Seu horário está reservado, ${first}. Guarde o código abaixo.`}</p>
         </div>`;
     return `${head}
-      <div class="ticket${pending ? ' is-pending' : ''}">
+      <div class="ticket">
         ${ticketTop()}
         <dl class="ticket-rows">
           ${row('Serviço', `<span class="big">${esc(b.serviceName)}</span>`)}
@@ -223,7 +215,7 @@ const VIEWS = {
         <div class="ticket-code"><span>Código do agendamento</span><strong>${esc(b.code)}</strong></div>
       </div>
       <div class="after-list">
-        ${wa && !pending ? `<a class="btn" href="${esc(wa)}" target="_blank" rel="noopener">${ICONS.wa} Abrir o WhatsApp de novo</a>` : ''}
+        ${wa ? `<a class="btn" href="${esc(wa)}" target="_blank" rel="noopener">${ICONS.wa} O WhatsApp não abriu? Toque aqui</a>` : ''}
         <a class="btn" href="${esc(googleCal(b))}" target="_blank" rel="noopener">${ICONS.cal} Adicionar à minha agenda</a>
         <button type="button" class="btn btn-ghost" data-act="again">Fazer outro agendamento</button>
       </div>
@@ -440,6 +432,15 @@ async function confirmBooking() {
   if (S.sending) return;
   const btn = $('#confirmBtn');
   const errBox = $('#reviewError');
+  // Abre a aba do WhatsApp AINDA DENTRO DO TOQUE (antes de qualquer espera),
+  // senão o celular bloqueia. Depois que a reserva é gravada, ela vai para a conversa.
+  let tab = null;
+  if (S.cfg.business.whatsapp) {
+    try {
+      tab = window.open('', '_blank');
+      if (tab) tab.document.write('<!doctype html><meta name="viewport" content="width=device-width"><title>LA SANTOS</title><body style="margin:0;display:grid;place-items:center;height:100vh;background:#0a0a0a;color:#f3efe7;font:16px system-ui,sans-serif">Abrindo o WhatsApp…</body>');
+    } catch { tab = null; }
+  }
   S.sending = true;
   btn?.classList.add('is-loading'); renderChrome();
   if (errBox) errBox.innerHTML = '';
@@ -451,14 +452,21 @@ async function confirmBooking() {
     S.booking = booking;
     S.cal.clear(); S.slotsKey = '';
     S.sending = false;
-    S.waSent = false;
+    rememberBooking(booking);
     const wa = bookingWaLink(booking);
-    if (wa) {
-      // ainda dentro do toque do cliente: abre o WhatsApp já com a mensagem
-      try { const w = window.open(wa, '_blank'); if (w) { w.opener = null; S.waSent = true; } } catch {}
+    if (wa && tab && !tab.closed) {
+      try { tab.opener = null; tab.location.href = wa; } catch { tab = null; }
+    }
+    if (wa && (!tab || tab.closed)) {
+      // sem aba nova (navegador de app, bloqueio): abre o WhatsApp nesta mesma aba;
+      // ao voltar, a tela de confirmação é restaurada.
+      history.replaceState(null, '', '#confirmado');
+      location.href = wa;
+      return;
     }
     go('confirmado');
   } catch (e) {
+    try { tab?.close(); } catch {}
     S.sending = false;
     btn?.classList.remove('is-loading'); renderChrome();
     if (e instanceof ApiError && e.code === 'slot_taken') {
@@ -476,6 +484,19 @@ async function confirmBooking() {
   }
 }
 
+// guarda o último agendamento por alguns minutos, para a tela de confirmação
+// voltar mesmo que o navegador recarregue ao sair do WhatsApp
+function rememberBooking(b) {
+  try { sessionStorage.setItem('ls_last_booking', JSON.stringify({ b, at: Date.now() })); } catch {}
+}
+function restoreBooking() {
+  try {
+    const v = JSON.parse(sessionStorage.getItem('ls_last_booking') || 'null');
+    if (v && Date.now() - v.at < 30 * 60 * 1000) return v.b;
+  } catch {}
+  return null;
+}
+
 function googleCal(b) {
   const d = b.date.replace(/-/g, '');
   const t = (x) => x.replace(':', '') + '00';
@@ -491,7 +512,7 @@ function googleCal(b) {
 
 function resetFlow() {
   S.serviceId = null; S.proId = 'any'; S.date = null; S.time = null; S.month = S.cfg.today.slice(0, 7);
-  S.booking = null; S.requestId = null; S.waSent = false; S.slotsKey = ''; S.cal.clear();
+  S.booking = null; S.requestId = null; S.slotsKey = ''; S.cal.clear();
   go('servico');
 }
 
@@ -590,7 +611,6 @@ document.addEventListener('click', (e) => {
     case 'submitClient': submitClient(); break;
     case 'confirm': confirmBooking(); break;
     case 'again': resetFlow(); break;
-    case 'waSent': setTimeout(() => { S.waSent = true; if (S.current === 'confirmado') render('confirmado'); }, 400); break;
     case 'top': e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); break;
   }
 });
@@ -671,6 +691,7 @@ function runIntro() {
 // ---------------------------------------------------------------- início
 async function boot() {
   runIntro();
+  if (location.hash === '#confirmado') S.booking = restoreBooking(); // voltou do WhatsApp
   try {
     const saved = JSON.parse(localStorage.getItem('ls_client') || 'null');
     if (saved) { S.name = saved.name || ''; S.phone = saved.phone || ''; }
